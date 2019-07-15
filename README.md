@@ -15,9 +15,9 @@
     )
 
     func main() {
-        logger := glog.NewEx("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile, 10, 5)
-	/* default 100,10 (the logfile file size 100MB, total split 10 times)*/
-	//logger := glog.New("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile)
+        /* default 100,10 (the logfile file size 100MB, total split 10 times)*/
+        logger := glog.New("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile)
+        //logger := glog.NewEx("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile, 10, 5)
         var Wg sync.WaitGroup
 
         for i := 0; i < 10; i++ {
