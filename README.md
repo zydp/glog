@@ -2,10 +2,10 @@
 可跟据指定大小自动拆分日志文件的Golang日志模块
 
 # install
-	
-	go get github.com/zydp/glog
-	
-	
+    
+    go get github.com/zydp/glog
+    
+    
 # using
     package main
 
@@ -17,6 +17,7 @@
     func main() {
         /* default 100,10 (the logfile file size 100MB, total split 10 times)*/
         logger := glog.New("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile)
+        
         //logger := glog.NewEx("test.log", "[Info] ", glog.Ldate | glog.Ltime | glog.Lshortfile, 10, 5)
         var Wg sync.WaitGroup
 
@@ -33,3 +34,9 @@
         Wg.Wait()
         logger.Println("It's Done!")
     }
+    
+# output
+    -rw-r--r--  1 root    root    279K Jul 15 11:10 test.log
+    -rw-r--r--  1 root    root    103M Jul 15 11:10 test.log.0
+    -rw-r--r--  1 root    root    101M Jul 15 11:10 test.log.1
+
