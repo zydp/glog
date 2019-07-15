@@ -28,7 +28,7 @@
                     logger.Println("abcdefghijklmnopqrstuvwxyz0123456789你好，我是测试日志~!@#$%^&*()_+{}|:")
                 }
                 Wg.Done()
-            }(1000)
+            }(100000)
         }
         Wg.Wait()
         logger.Println("It's Done!")
