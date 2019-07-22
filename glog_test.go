@@ -7,7 +7,7 @@ import (
 
 func TestNew(t *testing.T) {
 	/* default 100,10 (the logfile file size 100MB, total split 10 times)*/
-	var logger = New("test.log", "[Info] ", Ldate | Ltime | Lshortfile)
+	var logger = New("testA.log", "[Info] ", Ldate | Ltime | Lshortfile)
 	logger.Println("Hello!")
 	logger.SetPrefix("[ChanePrefix]")
 	logger.Println("Glog!")
@@ -27,7 +27,7 @@ func TestNew(t *testing.T) {
 }
 
 func TestNewEx(t *testing.T) {
-	var logger = NewEx("test.log", "[Info] ", Ldate | Ltime | Lshortfile, 10, 5)
+	var logger = NewEx("testB.log", "[Info] ", Ldate | Ltime | Lshortfile, 10, 5)
 	logger.Println("Hello!")
 	logger.SetPrefix("[ChanePrefix]")
 	logger.Println("Glog!")
