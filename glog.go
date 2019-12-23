@@ -1,7 +1,6 @@
 package glog
 
 import (
-	"errors"
 	"fmt"
 	"io"
 	"os"
@@ -83,11 +82,14 @@ func NewEx(filename string, prefix string, flag int, splitSize int, splitCount i
 	return &Logger{filename: filename, prefix: prefix, flag: flag, splitFileSize: uint64(splitSize * 1024 * 1024), totalRotateSplit: splitCount, fileHandle: openLogFile, out: openLogFile, writtenSize: 0}
 }
 
+func newEx(out io.Writer, prefix string, flag int) *Logger {
+	return &Logger{filename: "", prefix: prefix, flag: flag, splitFileSize: uint64(SPLIT_FILE_SIZE * 1024 * 1024), totalRotateSplit: TOTAL_ROTATE_SPLIT, fileHandle: nil, out: out, writtenSize: 0}
+}
+
+var gStd = newEx(os.Stderr, "", LstdFlags)
+
 /*rotate the log file*/
 func (l *Logger) rotate() (err error) {
-	if l.filename == "" {
-		return errors.New("The rotate feature is not on")
-	}
 	_ = l.fileHandle.Close()
 	_ = os.Rename(l.filename, fmt.Sprintf("%s.%d", l.filename, l.splitRotateIndex))
 	l.fileHandle, err = os.OpenFile(l.filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
@@ -96,7 +98,6 @@ func (l *Logger) rotate() (err error) {
 	}
 	l.out = l.fileHandle
 	l.splitRotateIndex++
-	l.writtenSize = 0
 	if l.splitRotateIndex > l.totalRotateSplit {
 		l.splitRotateIndex = 0
 	}
@@ -115,6 +116,12 @@ func (l *Logger) setOutput(w io.Writer) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.out = w
+}
+
+func SetOutput(w io.Writer) {
+	gStd.mu.Lock()
+	defer gStd.mu.Unlock()
+	gStd.out = w
 }
 
 /*Cheap integer to fixed-width decimal ASCII. Give a negative width to avoid zero-padding.*/
@@ -221,9 +228,15 @@ func (l *Logger) Output(calldepth int, s string) error {
 	n, err := l.out.Write(l.buf)
 	l.writtenSize += uint64(n)
 	if l.writtenSize >= l.splitFileSize {
-		l.rotate()
+		if l.filename != "" {
+			l.rotate()
+		}
+		l.writtenSize = 0
 	}
 	return err
+}
+func Output(calldepth int, s string) error {
+	return gStd.Output(calldepth+1, s) // +1 for this frame.
 }
 
 /*
@@ -233,22 +246,35 @@ Arguments are handled in the manner of fmt.Printf.
 func (l *Logger) Printf(format string, v ...interface{}) {
 	l.Output(2, fmt.Sprintf(format, v...))
 }
+func Printf(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(format, v...))
+}
 
 /*
 Print calls l.Output to print to the logger.
 Arguments are handled in the manner of fmt.Print.
 */
 func (l *Logger) Print(v ...interface{}) { l.Output(2, fmt.Sprint(v...)) }
+func Print(v ...interface{}) {
+	gStd.Output(2, fmt.Sprint(v...))
+}
 
 /*
 Println calls l.Output to print to the logger.
 Arguments are handled in the manner of fmt.Println.
 */
 func (l *Logger) Println(v ...interface{}) { l.Output(2, fmt.Sprintln(v...)) }
+func Println(v ...interface{}) {
+	gStd.Output(2, fmt.Sprintln(v...))
+}
 
 /*Fatal is equivalent to l.Print() followed by a call to os.Exit(1).*/
 func (l *Logger) Fatal(v ...interface{}) {
 	l.Output(2, fmt.Sprint(v...))
+	os.Exit(1)
+}
+func Fatal(v ...interface{}) {
+	gStd.Output(2, fmt.Sprint(v...))
 	os.Exit(1)
 }
 
@@ -257,10 +283,18 @@ func (l *Logger) Fatalf(format string, v ...interface{}) {
 	l.Output(2, fmt.Sprintf(format, v...))
 	os.Exit(1)
 }
+func Fatalf(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(format, v...))
+	os.Exit(1)
+}
 
 /*Fatalln is equivalent to l.Println() followed by a call to os.Exit(1).*/
 func (l *Logger) Fatalln(v ...interface{}) {
 	l.Output(2, fmt.Sprintln(v...))
+	os.Exit(1)
+}
+func Fatalln(v ...interface{}) {
+	gStd.Output(2, fmt.Sprintln(v...))
 	os.Exit(1)
 }
 
@@ -270,11 +304,21 @@ func (l *Logger) Panic(v ...interface{}) {
 	l.Output(2, s)
 	panic(s)
 }
+func Panic(v ...interface{}) {
+	s := fmt.Sprint(v...)
+	gStd.Output(2, s)
+	panic(s)
+}
 
 /*Panicf is equivalent to l.Printf() followed by a call to panic().*/
 func (l *Logger) Panicf(format string, v ...interface{}) {
 	s := fmt.Sprintf(format, v...)
 	l.Output(2, s)
+	panic(s)
+}
+func Panicf(format string, v ...interface{}) {
+	s := fmt.Sprintf(format, v...)
+	gStd.Output(2, s)
 	panic(s)
 }
 
@@ -284,12 +328,20 @@ func (l *Logger) Panicln(v ...interface{}) {
 	l.Output(2, s)
 	panic(s)
 }
+func Panicln(v ...interface{}) {
+	s := fmt.Sprintln(v...)
+	gStd.Output(2, s)
+	panic(s)
+}
 
 /*Flags returns the output flags for the logger.*/
 func (l *Logger) Flags() int {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.flag
+}
+func Flags() int {
+	return gStd.Flags()
 }
 
 /*SetFlags sets the output flags for the logger.*/
@@ -299,11 +351,18 @@ func (l *Logger) SetFlags(flag int) {
 	l.flag = flag
 }
 
+func SetFlags(flag int) {
+	gStd.SetFlags(flag)
+}
+
 /*Prefix returns the output prefix for the logger.*/
 func (l *Logger) Prefix() string {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	return l.prefix
+}
+func Prefix() string {
+	return gStd.Prefix()
 }
 
 /*SetPrefix sets the output prefix for the logger.*/
@@ -311,4 +370,18 @@ func (l *Logger) SetPrefix(prefix string) {
 	l.mu.Lock()
 	defer l.mu.Unlock()
 	l.prefix = prefix
+}
+
+func SetPrefix(prefix string) {
+	gStd.SetPrefix(prefix)
+}
+
+// Writer returns the output destination for the logger.
+func (l *Logger) Writer() io.Writer {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return l.out
+}
+func Writer() io.Writer {
+	return gStd.Writer()
 }
