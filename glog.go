@@ -253,31 +253,31 @@ func Output(calldepth int, s string) error {
 
 /*#################### S u g a r #####################*/
 func (l *Logger) Debug(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
 }
 func Debug(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
 }
 
 func (l *Logger) Info(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 func Info(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 
 func (l *Logger) Warn(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 func Warn(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 
 func (l *Logger) Err(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 func Err(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("%s[%s]:", levelStr[logLevel], format), v...))
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s:", levelStr[logLevel], format), v...))
 }
 
 /*
