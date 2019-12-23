@@ -39,6 +39,20 @@ const (
 const (
 	SPLIT_FILE_SIZE    = 100 //the default file split size is 100MB
 	TOTAL_ROTATE_SPLIT = 10  //the default total split count is 10
+
+)
+
+const (
+	DEBUG = iota
+	INFO
+	WARNING
+	ERROR
+	FATAL
+)
+
+var (
+	gStd     = newEx(os.Stderr, "", LstdFlags)                     //global handle
+	levelStr = []string{"DEBUG", "INFO", "WARN", "ERROR", "FATAL"} //Log level str
 )
 
 /*
@@ -85,8 +99,6 @@ func NewEx(filename string, prefix string, flag int, splitSize int, splitCount i
 func newEx(out io.Writer, prefix string, flag int) *Logger {
 	return &Logger{filename: "", prefix: prefix, flag: flag, splitFileSize: uint64(SPLIT_FILE_SIZE * 1024 * 1024), totalRotateSplit: TOTAL_ROTATE_SPLIT, fileHandle: nil, out: out, writtenSize: 0}
 }
-
-var gStd = newEx(os.Stderr, "", LstdFlags)
 
 /*rotate the log file*/
 func (l *Logger) rotate() (err error) {
@@ -237,6 +249,35 @@ func (l *Logger) Output(calldepth int, s string) error {
 }
 func Output(calldepth int, s string) error {
 	return gStd.Output(calldepth+1, s) // +1 for this frame.
+}
+
+/*#################### S u g a r #####################*/
+func (l *Logger) Debug(logLevel int, format string, v ...interface{}) {
+	l.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+func Debug(logLevel int, format string, v ...interface{}) {
+	gStd.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+
+func (l *Logger) Info(logLevel int, format string, v ...interface{}) {
+	l.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+func Info(logLevel int, format string, v ...interface{}) {
+	gStd.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+
+func (l *Logger) Warn(logLevel int, format string, v ...interface{}) {
+	l.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+func Warn(logLevel int, format string, v ...interface{}) {
+	gStd.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+
+func (l *Logger) Err(logLevel int, format string, v ...interface{}) {
+	l.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
+}
+func Err(logLevel int, format string, v ...interface{}) {
+	gStd.Printf(fmt.Sprintf("%s%s", levelStr[logLevel], format), v)
 }
 
 /*
