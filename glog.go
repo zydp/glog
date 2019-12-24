@@ -252,32 +252,32 @@ func Output(calldepth int, s string) error {
 }
 
 /*#################### S u g a r #####################*/
-func (l *Logger) Debug(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func (l *Logger) Debug(format string, v ...interface{}) {
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[DEBUG], format), v...))
 }
-func Debug(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
-}
-
-func (l *Logger) Info(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
-}
-func Info(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func Debug(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[DEBUG], format), v...))
 }
 
-func (l *Logger) Warn(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func (l *Logger) Info(format string, v ...interface{}) {
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[INFO], format), v...))
 }
-func Warn(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func Info(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[INFO], format), v...))
 }
 
-func (l *Logger) Err(logLevel int, format string, v ...interface{}) {
-	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func (l *Logger) Warn(format string, v ...interface{}) {
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[WARNING], format), v...))
 }
-func Err(logLevel int, format string, v ...interface{}) {
-	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[logLevel], format), v...))
+func Warn(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[WARNING], format), v...))
+}
+
+func (l *Logger) Err(format string, v ...interface{}) {
+	l.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[ERROR], format), v...))
+}
+func Err(format string, v ...interface{}) {
+	gStd.Output(2, fmt.Sprintf(fmt.Sprintf("[%s]:%s", levelStr[ERROR], format), v...))
 }
 
 /*
